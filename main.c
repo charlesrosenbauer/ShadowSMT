@@ -10,13 +10,13 @@
 
 int main(){
 	Instance sat = newInstance(32);
-	int buffsize;
 	
-	buffsize = addVars(&sat, 5);
-	addAdder(&sat, buffsize+1, buffsize+2, buffsize+3, buffsize+4, buffsize+5);
+	int32_t as  = addVars(&sat, 32);
+	int32_t bs  = addVars(&sat, 32);
+	int32_t qs  = addVars(&sat, 32);
+	int32_t cry = addVar (&sat);
+	int32_t ovf = addVar (&sat);
 	
-	buffsize = addVars(&sat, 5);
-	addAdder(&sat, buffsize+1, buffsize+2, buffsize+3, buffsize+4, buffsize+5);
-	
+	adder(&sat, 32, as, bs, qs, cry, ovf);
 	printSAT(&sat);
 }

@@ -69,6 +69,6 @@ void     addNOT  (Instance*, int, int);
 void     addXOR  (Instance*, int, int, int);
 void     addAdder(Instance*, int, int, int, int, int);
 
-
+void     adder   (Instance*, int, int, int, int, int, int);
 
 #endif

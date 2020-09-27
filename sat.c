@@ -187,3 +187,21 @@ void addAdder(Instance* i, int a, int b, int cin, int sum, int cex){
 }
 
 
+
+
+void     adder   (Instance* i, int bits, int startA, int startB, int startQ, int cin, int ovf){
+	int a  = startA;
+	int b  = startB;
+	int q  = startQ;
+	int c  = cin;
+	int o  = addVar(i);
+	for(int ix = 0; ix < bits; ix++){
+		addAdder(i, a, b, c, q, o);
+		a++;
+		b++;
+		q++;
+		c = o;
+		o = (ix == bits-1)? ovf : addVar(i);
+	}
+}
+
