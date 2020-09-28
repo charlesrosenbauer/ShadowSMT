@@ -139,5 +139,49 @@ void printSAT(Instance* i){
 
 
 
+Connectome buildConnectome(Instance* i){
+	Connectome ret;
+	ret.clausects = malloc(sizeof(int) * i->varct);
+	for(int ix = 0; ix < i->varct;    ix++) ret.clausects[ix] = 0;
+	for(int ix = 0; ix < i->clausect; ix++){
+		Clause cl = i->clauses[ix];
+		int32_t a = abs(cl.a), b = abs(cl.b), c = abs(cl.c);
+		
+		if(a != 0) ret.clausects[a-1]++;
+		if(b != 0) ret.clausects[b-1]++;
+		if(c != 0) ret.clausects[c-1]++;
+	}
+	
+	int* refFill = malloc(sizeof(int) * ret.varct);
+	for(int ix = 0; ix < i->varct; ix++) refFill[ix] = 0;
+	for(int ix = 0; ix < i->varct; ix++) ret.clauseref[ix] = malloc(sizeof(int) * ret.clausects[ix]);
+	
+	/*
+		TODO: build graph of connected clauses
+	*/
+	
+	free(refFill);
+	return ret;
+}
+
+
+
+
+
+int solve(Instance* i, uint64_t* bits, int size){
+	int ix = 0;
+	int words = (size / 64) + 1;
+	uint64_t* progress = malloc(sizeof(uint64_t) * words);
+	for(int i = 0; i < words; i++) progress[i] = 0;
+	
+	int cont = 1;
+	while(cont){
+		// Recursively search the SAT Tree
+	}
+	
+	free(progress);
+	return 1;
+}
+
 
 
