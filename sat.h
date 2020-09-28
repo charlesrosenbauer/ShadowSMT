@@ -53,6 +53,14 @@ typedef struct{
 	int      clausect, clausecap, varct;
 }Instance;
 
+typedef struct{
+	int** clauseref;
+	int*  clausects;
+	int   varct;
+	
+	uint64_t* satClauses;
+}Connectome;
+
 
 Instance newInstance   (int);
 void     resizeInstance(Instance*, int);
@@ -75,6 +83,7 @@ void     addXOR  (Instance*, int, int, int);
 void     addAdder(Instance*, int, int, int, int, int);
 
 void     adder   (Instance*, int, int, int, int, int, int);
+void     mux     (Instance*, int, int, int, int, int);
 
 
 
