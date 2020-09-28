@@ -62,7 +62,12 @@ int32_t  addVars       (Instance*, int);
 void     printSAT      (Instance*);
 
 
+
+/*
+	Circuit construction
+*/
 void     addAND  (Instance*, int, int, int);
+void     addANDN (Instance*, int, int, int);
 void     addORR  (Instance*, int, int, int);
 void     addNOR  (Instance*, int, int, int);
 void     addNOT  (Instance*, int, int);
@@ -70,5 +75,13 @@ void     addXOR  (Instance*, int, int, int);
 void     addAdder(Instance*, int, int, int, int, int);
 
 void     adder   (Instance*, int, int, int, int, int, int);
+
+
+
+/*
+
+*/
+
+
 
 #endif

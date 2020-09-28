@@ -14,6 +14,13 @@ void addAND(Instance* i, int a, int b, int q){
 }
 
 
+void addANDN(Instance* i, int a, int b, int q){
+	addClause(i, (Clause){-a,  b,  q});
+	addClause(i, (Clause){ a, -q, -q});
+	addClause(i, (Clause){-b, -q, -q});
+}
+
+
 void addORR(Instance* i, int a, int b, int q){
 	addClause(i, (Clause){ a,  b, -q});
 	addClause(i, (Clause){-a,  q,  q});
@@ -70,5 +77,20 @@ void     adder   (Instance* i, int bits, int startA, int startB, int startQ, int
 		q++;
 		c = o;
 		o = (ix == bits-1)? ovf : addVar(i);
+	}
+}
+
+
+
+void    mux   (Instance* i, int bits, int startA, int startQ, int startR, int flip){
+	int a  = startA;
+	int q  = startQ;
+	int r  = startR;
+	int x  = addVars(i, bits);
+	for(int ix = 0; ix < bits; ix++){
+		addAND (i, a, flip, q);
+		addANDN(i, a, flip, r);
+		q++;
+		r++;
 	}
 }
