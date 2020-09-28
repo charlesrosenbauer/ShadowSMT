@@ -9,35 +9,35 @@
 
 void addAND(Instance* i, int a, int b, int q){
 	addClause(i, (Clause){-a, -b,  q});
-	addClause(i, (Clause){ a, -q, -q});
-	addClause(i, (Clause){ b, -q, -q});
+	addClause(i, (Clause){ a, -q,  0});
+	addClause(i, (Clause){ b, -q,  0});
 }
 
 
 void addANDN(Instance* i, int a, int b, int q){
 	addClause(i, (Clause){-a,  b,  q});
-	addClause(i, (Clause){ a, -q, -q});
-	addClause(i, (Clause){-b, -q, -q});
+	addClause(i, (Clause){ a, -q,  0});
+	addClause(i, (Clause){-b, -q,  0});
 }
 
 
 void addORR(Instance* i, int a, int b, int q){
 	addClause(i, (Clause){ a,  b, -q});
-	addClause(i, (Clause){-a,  q,  q});
-	addClause(i, (Clause){-b,  q,  q});
+	addClause(i, (Clause){-a,  q,  0});
+	addClause(i, (Clause){-b,  q,  0});
 }
 
 
 void addNOR(Instance* i, int a, int b, int q){
 	addClause(i, (Clause){ a,  b,  q});
-	addClause(i, (Clause){-a, -q, -q});
-	addClause(i, (Clause){-b, -q, -q});
+	addClause(i, (Clause){-a, -q,  0});
+	addClause(i, (Clause){-b, -q,  0});
 }
 
 
 void addNOT(Instance* i, int a, int q){
-	addClause(i, (Clause){ a,  q,  q});
-	addClause(i, (Clause){-a, -q, -q});
+	addClause(i, (Clause){ a,  q,  0});
+	addClause(i, (Clause){-a, -q,  0});
 }
 
 
