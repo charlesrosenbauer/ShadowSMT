@@ -17,6 +17,9 @@ int main(){
 	int32_t cry = addVar (&sat);
 	int32_t ovf = addVar (&sat);
 	
-	adder(&sat, 32, as, bs, qs, cry, ovf);
-	printSAT(&sat);
+	adder(&sat, 32, as-31, bs-31, qs-31, cry, ovf);
+	//printSAT(&sat);
+	
+	Connectome c = buildConnectome(&sat);
+	printConnectome(&c);
 }

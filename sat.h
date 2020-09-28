@@ -56,7 +56,7 @@ typedef struct{
 typedef struct{
 	int** clauseref;
 	int*  clausects;
-	int   varct;
+	int   varct, clausect;
 	
 	uint64_t* satClauses;
 }Connectome;
@@ -69,7 +69,8 @@ int32_t  addVar        (Instance*);
 int32_t  addVars       (Instance*, int);
 void     printSAT      (Instance*);
 
-
+Connectome buildConnectome(Instance*);
+void       printConnectome(Connectome*);
 
 /*
 	Circuit construction

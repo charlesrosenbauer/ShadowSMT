@@ -141,6 +141,9 @@ void printSAT(Instance* i){
 
 Connectome buildConnectome(Instance* i){
 	Connectome ret;
+	ret.varct    = i->varct;
+	ret.clausect = i->clausect;
+	
 	ret.clausects = malloc(sizeof(int) * i->varct);
 	for(int ix = 0; ix < i->varct;    ix++) ret.clausects[ix] = 0;
 	for(int ix = 0; ix < i->clausect; ix++){
@@ -152,16 +155,42 @@ Connectome buildConnectome(Instance* i){
 		if(c != 0) ret.clausects[c-1]++;
 	}
 	
-	int* refFill = malloc(sizeof(int) * ret.varct);
-	for(int ix = 0; ix < i->varct; ix++) refFill[ix] = 0;
-	for(int ix = 0; ix < i->varct; ix++) ret.clauseref[ix] = malloc(sizeof(int) * ret.clausects[ix]);
-	
-	/*
-		TODO: build graph of connected clauses
-	*/
+	int* refFill  = malloc(sizeof(int ) * ret.varct);
+	ret.clauseref = malloc(sizeof(int*) * ret.varct);
+	for(int ix = 0; ix < i->varct;    ix++) refFill[ix] = 0;
+	for(int ix = 0; ix < i->varct;    ix++) ret.clauseref[ix] = malloc(sizeof(int) * ret.clausects[ix]);
+	for(int ix = 0; ix < i->clausect; ix++){
+		Clause cl = i->clauses[ix];
+		int32_t a = abs(cl.a), b = abs(cl.b), c = abs(cl.c);
+		
+		if(a != 0){
+			ret.clauseref[a-1][refFill[a-1]] = ix;
+			refFill[a-1]++;
+		}
+		
+		if(b != 0){
+			ret.clauseref[b-1][refFill[b-1]] = ix;
+			refFill[b-1]++;
+		}
+		
+		if(c != 0){
+			ret.clauseref[c-1][refFill[c-1]] = ix;
+			refFill[c-1]++;
+		}
+	}
 	
 	free(refFill);
 	return ret;
+}
+
+
+void printConnectome(Connectome* c){
+	printf("Connectome:\n");
+	for(int i = 0; i < c->varct; i++){
+		printf("%i (%i) : ", i+1, c->clausects[i]);
+		for(int j = 0; j < c->clausects[i]; j++) printf(" [%i]", c->clauseref[i][j]);
+		printf("\n");
+	}
 }
 
 
