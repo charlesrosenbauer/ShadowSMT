@@ -1,2 +1,2 @@
 all:
-	clang -O3 *.c
+	clang -O3 -static *.c
