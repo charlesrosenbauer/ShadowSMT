@@ -20,6 +20,8 @@ int main(){
 	adder(&sat, 32, as-31, bs-31, qs-31, cry, ovf);
 	//printSAT(&sat);
 	
-	Connectome c = buildConnectome(&sat);
+	Connectome  c = buildConnectome(&sat);
 	printConnectome(&c);
+	
+	SolverState s = newSolverState (&sat);
 }

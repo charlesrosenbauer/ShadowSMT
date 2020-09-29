@@ -57,9 +57,15 @@ typedef struct{
 	int** clauseref;
 	int*  clausects;
 	int   varct, clausect;
+}Connectome;
+
+typedef struct{
+	uint64_t* knownVars;
+	uint64_t* stateVars;
 	
 	uint64_t* satClauses;
-}Connectome;
+	int varct, clausect;
+}SolverState;
 
 
 Instance newInstance   (int);
@@ -69,8 +75,10 @@ int32_t  addVar        (Instance*);
 int32_t  addVars       (Instance*, int);
 void     printSAT      (Instance*);
 
-Connectome buildConnectome(Instance*);
-void       printConnectome(Connectome*);
+Connectome  buildConnectome(Instance*);
+void        printConnectome(Connectome*);
+
+SolverState newSolverState (Instance*);
 
 /*
 	Circuit construction

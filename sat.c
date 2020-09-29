@@ -194,6 +194,30 @@ void printConnectome(Connectome* c){
 }
 
 
+SolverState newSolverState(Instance* i){
+	SolverState ret;
+	ret.varct      = i->varct;
+	ret.clausect   = i->clausect;
+	int varsize    = (ret.varct    / 64) + ((ret.varct    % 64) != 0);
+	int clssize    = (ret.clausect / 64) + ((ret.clausect % 64) != 0);
+	ret.knownVars  = malloc(sizeof(uint64_t) * varsize);
+	ret.stateVars  = malloc(sizeof(uint64_t) * varsize);
+	ret.satClauses = malloc(sizeof(uint64_t) * clssize);
+	for(int ix = 0; ix < varsize; ix++){
+		ret.knownVars[ix] = 0;
+		ret.stateVars[ix] = 0;
+	}
+	for(int ix = 0; ix < clssize; ix++) ret.satClauses[ix] = 0;
+	
+	return ret;
+}
+
+
+void constantPropagation(Connectome* c, SolverState* s){
+	
+}
+
+
 
 
 
