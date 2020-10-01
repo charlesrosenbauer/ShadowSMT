@@ -46,6 +46,15 @@ B256 constrain(uint8_t pos, uint8_t neg){
 }
 
 
+int void256(B256 a){
+	uint64_t x  = b.bits[0];
+			 x &= b.bits[1];
+			 x &= b.bits[2];
+			 x &= b.bits[3];
+	return x != 0;
+}
+
+
 
 B256 and256(B256 a, B256 b){
 	B256 ret;
@@ -76,6 +85,17 @@ int pct256(B256 a){
 	for(int i = 0; i < 4; i++)
 		sum += __builtin_popcountl(a.bits[i]);
 	return sum;
+}
+
+
+B256 intersect(B256* ret, int ct){
+	B256 ret;
+	for(int i = 0; i <  4; i++) ret.bits[i] = -1;
+	
+	for(int i = 0; i < ct; i++)
+		for(int j = 0; j < 4; j++) ret.bits[j] &= ret[i].bits[j];
+	
+	return ret;
 }
 
 
@@ -214,8 +234,15 @@ SolverState newSolverState(Instance* i){
 
 
 void constantPropagation(Connectome* c, SolverState* s){
+	for(int i = 0; i < c->clausect; i++){
 	
+	}
 }
+
+
+
+
+
 
 
 
