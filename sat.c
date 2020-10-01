@@ -47,10 +47,10 @@ B256 constrain(uint8_t pos, uint8_t neg){
 
 
 int void256(B256 a){
-	uint64_t x  = b.bits[0];
-			 x &= b.bits[1];
-			 x &= b.bits[2];
-			 x &= b.bits[3];
+	uint64_t x  = a.bits[0];
+			 x &= a.bits[1];
+			 x &= a.bits[2];
+			 x &= a.bits[3];
 	return x != 0;
 }
 
@@ -88,12 +88,12 @@ int pct256(B256 a){
 }
 
 
-B256 intersect(B256* ret, int ct){
+B256 intersect(B256* xs, int ct){
 	B256 ret;
 	for(int i = 0; i <  4; i++) ret.bits[i] = -1;
 	
 	for(int i = 0; i < ct; i++)
-		for(int j = 0; j < 4; j++) ret.bits[j] &= ret[i].bits[j];
+		for(int j = 0; j < 4; j++) ret.bits[j] &= xs[i].bits[j];
 	
 	return ret;
 }
@@ -199,6 +199,13 @@ Connectome buildConnectome(Instance* i){
 		}
 	}
 	
+	/*
+		TODO: Add an additional graph that, for each variable, includes a list of
+		variables that it shares a constraint with. This will be used to create
+		satisfiabilty filters for quickly checking for satisfiability.
+	*/
+	
+	
 	free(refFill);
 	return ret;
 }
@@ -231,6 +238,9 @@ SolverState newSolverState(Instance* i){
 	
 	return ret;
 }
+
+
+
 
 
 void constantPropagation(Connectome* c, SolverState* s){
