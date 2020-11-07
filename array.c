@@ -2,58 +2,134 @@
 
 #include "stdint.h"
 #include "stdlib.h"
+#include "stdio.h"
 
 
-Array makeArray  (int cap){
-	Array ret;
-	ret.arr  = malloc(sizeof(int32_t) * cap);
-	ret.cap  = cap;
-	ret.size = 0;
+
+inline int checkBloom(Set32* s, int32_t n){
+	uint64_t x = n;
+	return ((s->bloom[0] & (1l <<         (x % 64) )) != 0) &
+		   ((s->bloom[1] & (1l << ((x/64)+(x % 64)))) != 0);
+}
+
+
+
+inline void insertBloom(Set32* s, int32_t n){
+	uint64_t x = n;
+	s->bloom[0] |= (1l <<         (x % 64) );
+	s->bloom[1] |= (1l << ((x/64)+(x % 64)));
+}
+
+
+
+Set32 initSet32  (int cap){
+	Set32 ret;
+	ret.vals     = malloc(sizeof(int32_t) * cap);
+	ret.size     = 0;
+	ret.cap      = cap;
 	ret.bloom[0] = 0;
 	ret.bloom[1] = 0;
 	return ret;
 }
 
 
-void  appendArray(Array* a, int32_t x){
-	if(a->size + 1 >= a->cap){
-		int32_t* tmp = a->arr;
-		a->arr = malloc(sizeof(int32_t) * a->cap * 2);
-		a->cap *= 2;
-		for(int i = 0; i < a->size; i++) a->arr[i] = tmp[i];
+
+int   expandSet32(Set32* s, int cap){
+	if(cap > s->cap){
+		int32_t* tmp = s->vals;
+		s->vals      = malloc(sizeof(int32_t) * cap);
+		for(int i = 0; i < s->size; i++) tmp[i] = s->vals[i];
 		free(tmp);
+		return 1;
 	}
-	uint64_t h0 = 1l << (  x            % 64);
-	uint64_t h1 = 1l << (((x / 64) + x) % 64);
-	if(((a->bloom[0] & h0) == 0) | ((a->bloom[1] & h1) == 0)){
-		a->bloom[0] |= h0;
-		a->bloom[1] |= h1;
-		a->arr[a->size] = x;
-		a->size++;
-		return;
-	}
-	for(int i = 0; i < a->size; i++)
-		if(a->arr[i] == x) return;
-	
-	a->arr[a->size] = x;
-	a->size++;
+	return 0;
 }
 
 
-Array unionArrays(Array a, Array b){
-	Array ret = makeArray((a.size + b.size) * 2);
+
+int   insertSet32(Set32* s, int32_t x){
+	if(checkBloom(s, x)){
+		// x might be in s, so we need to scan first.
+		for(int i = 0; i < s->size; i++) if(s->vals[i] == x) return 0;
+	}else{
+		// x is not in s, just insert at the end
+		insertBloom(s, x);
+	}
+	if((s->size+1) >= s->cap) expandSet32(s, s->cap * 2);
+	s->vals[s->size] = x;
+	s->size++;
+	return 1;
+}
+
+
+
+int   checkSet32 (Set32* s, int32_t x){
+	if(checkBloom(s, x))
+		for(int i = 0; i < s->size; i++) if(s->vals[i] == x) return 1;
+	return 0;
+}
+
+
+
+void  copySet32(Set32* dst, Set32* src){
+	if(dst->cap < src->size){
+		free(dst->vals);
+		dst->vals = malloc(sizeof(int32_t) * src->cap);
+		dst->cap  = src->cap;
+	}
+	for(int i = 0; i < src->size; i++) dst->vals[i] = src->vals[i];
+	dst->size = src->size;
+	dst->bloom[0] = src->bloom[0];
+	dst->bloom[1] = src->bloom[1];
+}
+
+
+
+Set32 intersect32(Set32 a, Set32 b){
+	Set32 ret = initSet32(a.cap);
+	if(a.size > b.size){
+		// Sets aren't sorted here to minimize the cost of insertions.
+		// Bloom filters reduce cost of checks (assuming the size of the set is small).
+		// This is kind of a nitpick, but I'm pretty sure things will go faster if we
+		// check against the smaller array. Fewer false positives in the bloom filter.
+		Set32 tmp = a;
+		b = a;
+		a = tmp;
+		if(a.size <= 0) return ret;	// Empty set, who cares?
+	}
 	
-	// do stuff
+	for(int i = 0; i < b.size; i++)
+		if(checkSet32(&a, b.vals[i]))
+			insertSet32(&ret, b.vals[i]);
 	
 	return ret;
 }
 
 
-Array interArrays(Array a, Array b){
-	int minsize = (a.size > b.size)? b.size : a.size;
-	Array ret = makeArray(minsize * 2);
+
+Set32 union32    (Set32 a, Set32 b){
+	Set32 ret = initSet32((a.size + b.size) * 2);
+	if(a.size > b.size){
+		Set32 tmp = a;
+		b = a;
+		a = tmp;
+	}
 	
-	// do stuff
+	copySet32(&ret, &b);
+	if(a.size <= 0) return ret;
+	
+	for(int i = 0; i < a.size; i++)
+		if(!checkSet32(&b, a.vals[i])) insertSet32(&ret, a.vals[i]);
 	
 	return ret;
+}
+
+
+void printSet32(Set32 s){
+	float ap  = __builtin_popcountl(s.bloom[0]);
+	float bp  = __builtin_popcountl(s.bloom[1]);
+	printf("%f %f\n", ap, bp);
+	float acc = ap * bp / 40.96;
+	printf("SET 32 : %i / %i : %f%%\n", s.size, s.cap, acc);
+	for(int i = 0; i < s.size; i++) printf("  %i\n", s.vals[i]);
 }
