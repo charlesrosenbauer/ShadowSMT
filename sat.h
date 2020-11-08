@@ -4,6 +4,8 @@
 
 #include "stdint.h"
 
+#include "array.h"
+
 
 /*
 	Bit Vector Manipulation.
@@ -54,9 +56,12 @@ typedef struct{
 }Instance;
 
 typedef struct{
-	int** clauseref;
-	int*  clausects;
-	int   varct, clausect;
+	int**   clauseref;
+	int*    clausects;
+	
+	Set32*  localVars;
+	
+	int     varct, clausect;
 }Connectome;
 
 typedef struct{

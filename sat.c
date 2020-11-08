@@ -3,6 +3,7 @@
 #include "stdio.h"
 
 #include "sat.h"
+#include "array.h"
 
 
 
@@ -204,6 +205,16 @@ Connectome buildConnectome(Instance* i){
 		variables that it shares a constraint with. This will be used to create
 		satisfiabilty filters for quickly checking for satisfiability.
 	*/
+	ret.localVars = malloc(sizeof(Set32) * i->varct);
+	for(int ix = 0; ix < i->varct; ix++){
+		ret.localVars[ix] = initSet32(32);
+		for(int j = 0; j < ret.clausects[ix]; j++){
+			Clause cl = i->clauses[ret.clauseref[ix][j]];
+			if(cl.a != 0) insertSet32(&ret.localVars[ix], cl.a);
+			if(cl.b != 0) insertSet32(&ret.localVars[ix], cl.b);
+			if(cl.c != 0) insertSet32(&ret.localVars[ix], cl.c);
+		}
+	}
 	
 	
 	free(refFill);
