@@ -227,6 +227,7 @@ void printConnectome(Connectome* c){
 	for(int i = 0; i < c->varct; i++){
 		printf("%i (%i) : ", i+1, c->clausects[i]);
 		for(int j = 0; j < c->clausects[i]; j++) printf(" [%i]", c->clauseref[i][j]);
+		printSet32(c->localVars[i]);
 		printf("\n");
 	}
 }

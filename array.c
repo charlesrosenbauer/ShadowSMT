@@ -130,6 +130,7 @@ void printSet32(Set32 s){
 	float bp  = __builtin_popcountl(s.bloom[1]);
 	printf("%f %f\n", ap, bp);
 	float acc = ap * bp / 40.96;
-	printf("SET 32 : %i / %i : %f%%\n", s.size, s.cap, acc);
-	for(int i = 0; i < s.size; i++) printf("  %i\n", s.vals[i]);
+	printf("SET 32 : %i / %i : %f%%\n  ", s.size, s.cap, acc);
+	for(int i = 0; i < s.size; i++) printf("%i, ", s.vals[i]);
+	printf("\n");
 }
