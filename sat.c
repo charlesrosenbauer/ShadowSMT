@@ -200,11 +200,6 @@ Connectome buildConnectome(Instance* i){
 		}
 	}
 	
-	/*
-		TODO: Add an additional graph that, for each variable, includes a list of
-		variables that it shares a constraint with. This will be used to create
-		satisfiabilty filters for quickly checking for satisfiability.
-	*/
 	ret.localVars = malloc(sizeof(Set32) * i->varct);
 	for(int ix = 0; ix < i->varct; ix++){
 		ret.localVars[ix] = initSet32(32);

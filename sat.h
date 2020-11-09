@@ -65,6 +65,18 @@ typedef struct{
 }Connectome;
 
 typedef struct{
+	int32_t vals[8];
+}FilterMetadata;
+
+typedef struct{
+	B256*           filters;
+	FilterMetadata* mdatas;
+	int             filtct, select;
+	
+	uint8_t base, index;
+}VarState;
+
+typedef struct{
 	uint64_t* knownVars;
 	uint64_t* stateVars;
 	
