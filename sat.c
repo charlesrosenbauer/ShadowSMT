@@ -100,6 +100,32 @@ B256 intersect(B256* xs, int ct){
 }
 
 
+int isNull(B256 x){
+	return 0 != (x.bits[0] | x.bits[1] | x.bits[2] | x.bits[3]);
+}
+
+int nextSolution(B256 x, uint8_t min){
+	int sols = pct256(x);
+	if(sols == 0) return -1;
+	if(sols == 1) return min;
+	for(int i = 0; i < 5; i++){
+		int ix = ((min / 64) + i) % 4;
+		uint64_t mask = (i == 0)? (1l << (min % 64))-1 : 0xffffffffffffffff;
+		if(x.bits[ix] & mask) return __builtin_ctzl(x.bits[ix] & mask);
+	}
+	return min;
+}
+
+int firstSolution(B256 x){
+	if(x.bits[0] != 0) return __builtin_ctzl(x.bits[0]);
+	if(x.bits[1] != 0) return __builtin_ctzl(x.bits[1]);
+	if(x.bits[2] != 0) return __builtin_ctzl(x.bits[2]);
+	if(x.bits[3] != 0) return __builtin_ctzl(x.bits[3]);
+	
+	return -1;
+}
+
+
 void printB256(B256 x){
 	printf("X: %lx %lx %lx %lx\n\n", x.bits[0], x.bits[1], x.bits[2], x.bits[3]);
 }
@@ -258,26 +284,59 @@ void constantPropagation(Connectome* c, SolverState* s){
 
 
 
-
-
-
-
-
-
-
-int solve(Instance* i, uint64_t* bits, int size){
-	int ix = 0;
-	int words = (size / 64) + 1;
-	uint64_t* progress = malloc(sizeof(uint64_t) * words);
-	for(int i = 0; i < words; i++) progress[i] = 0;
+B256 makeConstraint(Clause c, FilterMetadata fm){
+	uint16_t mask = 0;
 	
-	int cont = 1;
-	while(cont){
-		// Recursively search the SAT Tree
+	for(int v = 0; v < 3; v++){
+		int x, sign;
+		if(v == 0){
+			// Set A
+			x    = (c.a < 0)? -c.a : c.a;
+			sign = c.a < 0;
+		}else if(v == 1){
+			// Set B
+			x    = (c.b < 0)? -c.b : c.b;
+			sign = c.b < 0;
+		}else{
+			// Set C
+			x    = (c.c < 0)? -c.c : c.c;
+			sign = c.c < 0;
+		}
+		if(x != 0){
+			for(int i = 0; i < 8; i++){
+				int ix = (i+x+1)%8;
+				if(x == fm.vals[ix]){
+					mask |= (1 << (ix + (8 * sign)));
+					break;
+				}
+			}
+		}
 	}
 	
-	free(progress);
-	return 1;
+	return constrain(mask & 0xff, mask >> 8);
+}
+
+
+
+
+
+
+int solve(Instance* inst, uint64_t* bits){
+
+	if(inst->varct <= 8){
+		FilterMetadata fm;
+		B256* consts = malloc(sizeof(B256) * inst->clausect);
+		
+		for(int i = 0; i < 8; i++) fm.vals[i] = i+1;
+		for(int i = 0; i < inst->clausect; i++) consts[i] = makeConstraint(inst->clauses[i], fm);
+		
+		B256 sat = intersect(consts, inst->clausect);
+		free(consts);
+		
+		return firstSolution(sat);
+	}
+	
+	return 4701;
 }
 
 

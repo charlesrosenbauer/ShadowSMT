@@ -97,6 +97,8 @@ void        printConnectome(Connectome*);
 
 SolverState newSolverState (Instance*);
 
+int solve(Instance*, uint64_t*);
+
 /*
 	Circuit construction
 */
@@ -110,8 +112,6 @@ void     addAdder(Instance*, int, int, int, int, int);
 
 void     adder   (Instance*, int, int, int, int, int, int);
 void     mux     (Instance*, int, int, int, int, int);
-
-
 
 /*
 
