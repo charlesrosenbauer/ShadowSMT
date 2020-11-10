@@ -127,7 +127,20 @@ int firstSolution(B256 x){
 
 
 void printB256(B256 x){
-	printf("X: %lx %lx %lx %lx\n\n", x.bits[0], x.bits[1], x.bits[2], x.bits[3]);
+	const char* ixs = "0123456789ABCDEF\0";
+	printf("\n# 0123456789ABCDEF#\n");
+	int index = 0;
+	for(int i = 0; i < 4; i++){
+		for(int j = 0; j < 64; j++){
+			if((j % 16) == 0) printf("%c|", ixs[index]);
+			printf("%c", (x.bits[i] & (1l << j))? '#' : ' ');
+			if((j % 16) == 15){
+				printf("|\n");
+				index++;
+			}
+		}
+	}
+	printf("#=================#\n\n");
 }
 
 
@@ -330,8 +343,13 @@ int solve(Instance* inst, uint64_t* bits){
 		for(int i = 0; i < 8; i++) fm.vals[i] = i+1;
 		for(int i = 0; i < inst->clausect; i++) consts[i] = makeConstraint(inst->clauses[i], fm);
 		
+		B256  undef  = constrain(0, 0xff << inst->varct);
+		
 		B256 sat = intersect(consts, inst->clausect);
+		sat      = and256   (sat, undef);
 		free(consts);
+		
+		printB256(sat);
 		
 		return firstSolution(sat);
 	}
